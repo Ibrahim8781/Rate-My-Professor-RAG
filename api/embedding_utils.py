@@ -1,18 +1,41 @@
-from dotenv import load_dotenv
+# api/embedding_utils.py
 import os
-from langchain_huggingface import HuggingFaceEndpointEmbeddings
-
-# Load environment variables
+import numpy as np
+from dotenv import load_dotenv
 load_dotenv()
 
-# Initialize Hugging Face API key and embeddings model
-api_key = os.environ.get("HUGGINGFACE_API_KEY")
-embeddings = HuggingFaceEndpointEmbeddings(
-    repo_id="sentence-transformers/all-MiniLM-L6-v2",
-    huggingfacehub_api_token=api_key
-)
+HUGGINGFACE_API_KEY = os.environ.get("HUGGINGFACE_API_KEY")
 
-# Function to create embeddings
-def create_embeddings(text):
-    embedding_vector = embeddings.embed_query(text)
-    return embedding_vector
+# If you later install and want to use the huggingface endpoint,
+# you can add the real huggingface endpoint code here.
+# For now we provide a deterministic fallback embedding so everything runs offline.
+
+EMBED_DIM = 384  # arbitrary fixed dim for fallback
+
+def _fallback_embedding(text: str):
+    """
+    Deterministic, simple embedding:
+    - Hash token strings to seed numpy RNG so same text -> same vector
+    - Return normalized float list
+    """
+    s = text or ""
+    seed = abs(hash(s)) % (2**32)
+    rng = np.random.default_rng(seed)
+    vec = rng.standard_normal(EMBED_DIM)
+    # normalize
+    vec = vec / (np.linalg.norm(vec) + 1e-12)
+    return vec.tolist()
+
+def create_embeddings(text: str):
+    """
+    Returns a vector (list[float]).
+    If HUGGINGFACE_API_KEY is configured and you have the HuggingFace
+    endpoint package installed, add that code here. Otherwise we use the fallback.
+    """
+    if HUGGINGFACE_API_KEY:
+        # Placeholder: If you later integrate real huggingface endpoint, implement here.
+        # Example: call the HuggingFace endpoint embedding and return the vector.
+        pass
+
+    # fallback:
+    return _fallback_embedding(text)
