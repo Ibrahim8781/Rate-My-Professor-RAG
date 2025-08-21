@@ -8,81 +8,283 @@
     "num_reviews": 128,
     "tags": ["clear lectures", "helpful office hours", "fair grading"],
     "reviews": [
-      { "text": "Great teacher, explains concepts clearly.", "rating": 5, "term": "Fall 2023" },
-      { "text": "Fair exams, good pacing.", "rating": 5, "term": "Spring 2024" }
+      { "text": "Great teacher, explains concepts clearly. Her lectures are well-organized and she provides excellent examples.", "rating": 5, "term": "Fall 2023" },
+      { "text": "Fair exams, good pacing. Office hours are very helpful for understanding difficult concepts.", "rating": 5, "term": "Spring 2024" },
+      { "text": "Best math professor I've had. Makes calculus actually understandable.", "rating": 5, "term": "Fall 2024" }
     ],
-    "bio": "PhD in Mathematics from MIT. Research in numerical methods and pedagogy.",
+    "bio": "PhD in Mathematics from MIT. Research in numerical methods and pedagogy. Known for clear explanations and fair grading.",
     "profile_url": "https://university.example/jane_doe"
   },
   {
     "id": "prof_tom_green",
     "name": "Tom Green",
     "department": "Mathematics",
-    "subject": "Algebra",
+    "subject": "Linear Algebra",
     "avg_rating": 3.6,
     "num_reviews": 56,
-    "tags": ["tough grader", "messy slides"],
+    "tags": ["tough grader", "challenging", "theoretical"],
     "reviews": [
-      { "text": "Slides are messy but office hours help.", "rating": 3, "term": "Fall 2023" },
-      { "text": "Assignments are challenging.", "rating": 4, "term": "Spring 2024" }
+      { "text": "Very theoretical approach. Tough grader but you learn a lot.", "rating": 4, "term": "Fall 2023" },
+      { "text": "Assignments are challenging but fair. Need to attend every lecture.", "rating": 3, "term": "Spring 2024" },
+      { "text": "Hard class but worth it if you want to really understand linear algebra.", "rating": 4, "term": "Fall 2024" }
     ],
-    "bio": "Focus on abstract algebra and applications.",
-    "profile_url": ""
+    "bio": "PhD in Pure Mathematics. Focus on abstract algebra and linear algebra theory. Emphasizes rigorous mathematical thinking.",
+    "profile_url": "https://university.example/tom_green"
   },
   {
-    "id": "prof_mark_smith",
-    "name": "Mark Smith",
+    "id": "prof_sarah_johnson",
+    "name": "Sarah Johnson",
+    "department": "Computer Science",
+    "subject": "Data Structures",
+    "avg_rating": 4.5,
+    "num_reviews": 92,
+    "tags": ["clear explanations", "practical examples", "good feedback"],
+    "reviews": [
+      { "text": "Excellent at explaining complex algorithms. Uses great real-world examples.", "rating": 5, "term": "Fall 2023" },
+      { "text": "Projects are challenging but she provides good feedback. Very approachable.", "rating": 4, "term": "Spring 2024" },
+      { "text": "Best CS professor for understanding data structures and algorithms.", "rating": 5, "term": "Fall 2024" }
+    ],
+    "bio": "PhD in Computer Science from Stanford. Industry experience at Google. Specializes in algorithms and data structures.",
+    "profile_url": "https://university.example/sarah_johnson"
+  },
+  {
+    "id": "prof_mike_davis",
+    "name": "Mike Davis",
+    "department": "Physics",
+    "subject": "General Physics I",
+    "avg_rating": 4.2,
+    "num_reviews": 74,
+    "tags": ["engaging lectures", "helpful", "fair tests"],
+    "reviews": [
+      { "text": "Makes physics interesting with great demonstrations. Tests are fair.", "rating": 4, "term": "Fall 2023" },
+      { "text": "Very patient during office hours. Explains concepts multiple ways.", "rating": 5, "term": "Spring 2024" },
+      { "text": "Good balance of theory and practical applications. Recommends great resources.", "rating": 4, "term": "Fall 2024" }
+    ],
+    "bio": "PhD in Physics from Caltech. Research in quantum mechanics. Known for engaging lectures and clear explanations.",
+    "profile_url": "https://university.example/mike_davis"
+  },
+  {
+    "id": "prof_lisa_chen",
+    "name": "Lisa Chen",
     "department": "Chemistry",
     "subject": "Organic Chemistry",
-    "avg_rating": 4.2,
-    "num_reviews": 98,
-    "tags": ["demanding", "fair"],
+    "avg_rating": 4.8,
+    "num_reviews": 156,
+    "tags": ["amazing teacher", "clear lectures", "helpful office hours"],
     "reviews": [
-      { "text": "Very demanding but fair.", "rating": 4, "term": "Spring 2024" }
+      { "text": "Best chemistry professor ever! Makes organic chem actually make sense.", "rating": 5, "term": "Fall 2023" },
+      { "text": "Incredibly clear explanations. Office hours are always packed but worth the wait.", "rating": 5, "term": "Spring 2024" },
+      { "text": "Tough subject but she makes it manageable. Great study guides and practice problems.", "rating": 5, "term": "Fall 2024" }
     ],
-    "bio": "Organic synthesis expert. Known for rigorous labs.",
-    "profile_url": ""
+    "bio": "PhD in Organic Chemistry from Harvard. Published researcher with focus on synthesis. Passionate about teaching.",
+    "profile_url": "https://university.example/lisa_chen"
   },
   {
-    "id": "prof_alan_white",
-    "name": "Alan White",
-    "department": "Physics",
-    "subject": "Physics I",
+    "id": "prof_robert_wilson",
+    "name": "Robert Wilson",
+    "department": "English",
+    "subject": "Creative Writing",
     "avg_rating": 4.1,
-    "num_reviews": 72,
-    "tags": ["large classes", "helpful TAs"],
+    "num_reviews": 43,
+    "tags": ["inspiring", "constructive feedback", "flexible"],
     "reviews": [
-      { "text": "Large classes, helpful TAs.", "rating": 4, "term": "Fall 2023" }
+      { "text": "Really inspiring teacher. Gives constructive feedback on writing.", "rating": 4, "term": "Fall 2023" },
+      { "text": "Flexible with deadlines and understanding of creative process.", "rating": 4, "term": "Spring 2024" },
+      { "text": "Great workshops and peer review sessions. Improved my writing significantly.", "rating": 5, "term": "Fall 2024" }
     ],
-    "bio": "Experimental physicist with emphasis on teaching.",
-    "profile_url": ""
+    "bio": "MFA in Creative Writing. Published author of three novels. Focuses on narrative structure and character development.",
+    "profile_url": "https://university.example/robert_wilson"
   },
   {
-    "id": "prof_lucy_liu",
-    "name": "Lucy Liu",
+    "id": "prof_amanda_taylor",
+    "name": "Amanda Taylor",
+    "department": "Psychology",
+    "subject": "Introduction to Psychology",
+    "avg_rating": 4.6,
+    "num_reviews": 189,
+    "tags": ["engaging", "real-world examples", "fair grading"],
+    "reviews": [
+      { "text": "Makes psychology fascinating with real-world examples and case studies.", "rating": 5, "term": "Fall 2023" },
+      { "text": "Very engaging lecturer. Tests are fair and based on lectures and readings.", "rating": 4, "term": "Spring 2024" },
+      { "text": "Great intro to psychology. Really made me consider majoring in psych.", "rating": 5, "term": "Fall 2024" }
+    ],
+    "bio": "PhD in Clinical Psychology. Research focus on cognitive behavioral therapy. Excellent at making complex concepts accessible.",
+    "profile_url": "https://university.example/amanda_taylor"
+  },
+  {
+    "id": "prof_david_brown",
+    "name": "David Brown",
+    "department": "Economics",
+    "subject": "Microeconomics",
+    "avg_rating": 3.8,
+    "num_reviews": 67,
+    "tags": ["thorough", "demanding", "knowledgeable"],
+    "reviews": [
+      { "text": "Very thorough coverage of material. Demanding but fair.", "rating": 4, "term": "Fall 2023" },
+      { "text": "Knows his stuff but can be dry. Need to stay focused in class.", "rating": 3, "term": "Spring 2024" },
+      { "text": "Challenging course but you really learn economics. Good preparation for advanced courses.", "rating": 4, "term": "Fall 2024" }
+    ],
+    "bio": "PhD in Economics from University of Chicago. Research in microeconomic theory and market behavior.",
+    "profile_url": "https://university.example/david_brown"
+  },
+  {
+    "id": "prof_emily_clark",
+    "name": "Emily Clark",
+    "department": "Biology",
+    "subject": "Molecular Biology",
+    "avg_rating": 4.3,
+    "num_reviews": 102,
+    "tags": ["enthusiastic", "organized", "helpful"],
+    "reviews": [
+      { "text": "Very passionate about biology, makes the material engaging.", "rating": 5, "term": "Fall 2023" },
+      { "text": "Good at explaining tough concepts like DNA replication.", "rating": 4, "term": "Spring 2024" },
+      { "text": "Sometimes fast-paced, but overall great professor.", "rating": 4, "term": "Fall 2024" }
+    ],
+    "bio": "PhD in Biology from UC Berkeley. Research in molecular genetics and gene regulation.",
+    "profile_url": "https://university.example/emily_clark"
+  },
+  {
+    "id": "prof_james_white",
+    "name": "James White",
+    "department": "History",
+    "subject": "World History",
+    "avg_rating": 4.0,
+    "num_reviews": 88,
+    "tags": ["storyteller", "engaging lectures", "challenging exams"],
+    "reviews": [
+      { "text": "Great storyteller, makes history come alive.", "rating": 5, "term": "Fall 2023" },
+      { "text": "Exams are tough, but fair if you keep up with readings.", "rating": 3, "term": "Spring 2024" },
+      { "text": "Really broad perspective on world events, inspiring.", "rating": 4, "term": "Fall 2024" }
+    ],
+    "bio": "PhD in History. Specializes in global history and comparative empires.",
+    "profile_url": "https://university.example/james_white"
+  },
+  {
+    "id": "prof_sophia_martinez",
+    "name": "Sophia Martinez",
+    "department": "Political Science",
+    "subject": "International Relations",
+    "avg_rating": 4.4,
+    "num_reviews": 134,
+    "tags": ["debates", "current events", "engaging"],
+    "reviews": [
+      { "text": "Uses real-world events to explain theories. Very engaging.", "rating": 5, "term": "Fall 2023" },
+      { "text": "Class debates are amazing and thought-provoking.", "rating": 4, "term": "Spring 2024" },
+      { "text": "Sometimes loads of reading, but worth it.", "rating": 4, "term": "Fall 2024" }
+    ],
+    "bio": "PhD in Political Science. Research in international conflict and diplomacy.",
+    "profile_url": "https://university.example/sophia_martinez"
+  },
+  {
+    "id": "prof_mark_evans",
+    "name": "Mark Evans",
+    "department": "Sociology",
+    "subject": "Social Theory",
+    "avg_rating": 3.9,
+    "num_reviews": 54,
+    "tags": ["thought-provoking", "heavy reading", "intense discussions"],
+    "reviews": [
+      { "text": "Challenging but makes you think critically.", "rating": 4, "term": "Fall 2023" },
+      { "text": "A lot of reading, but discussions are rewarding.", "rating": 3, "term": "Spring 2024" },
+      { "text": "Really helped me see society differently.", "rating": 4, "term": "Fall 2024" }
+    ],
+    "bio": "PhD in Sociology. Research in social inequality and cultural studies.",
+    "profile_url": "https://university.example/mark_evans"
+  },
+  {
+    "id": "prof_hannah_lee",
+    "name": "Hannah Lee",
     "department": "Philosophy",
     "subject": "Ethics",
-    "avg_rating": 4.8,
-    "num_reviews": 150,
-    "tags": ["engaging", "fun"],
+    "avg_rating": 4.6,
+    "num_reviews": 79,
+    "tags": ["clear explanations", "respectful", "great discussions"],
     "reviews": [
-      { "text": "Engaging and fun.", "rating": 5, "term": "Fall 2023" }
+      { "text": "Explains philosophical concepts clearly. Great discussion leader.", "rating": 5, "term": "Fall 2023" },
+      { "text": "Really fair grader, cares about students' arguments.", "rating": 4, "term": "Spring 2024" },
+      { "text": "Made me fall in love with philosophy.", "rating": 5, "term": "Fall 2024" }
     ],
-    "bio": "Ethics and modern philosophy. High student engagement.",
-    "profile_url": ""
+    "bio": "PhD in Philosophy. Specializes in moral philosophy and applied ethics.",
+    "profile_url": "https://university.example/hannah_lee"
   },
   {
-    "id": "prof_sara_khan",
-    "name": "Sara Khan",
-    "department": "Psychology",
-    "subject": "Intro to Psychology",
-    "avg_rating": 4.9,
-    "num_reviews": 180,
-    "tags": ["supportive", "approachable"],
+    "id": "prof_daniel_nguyen",
+    "name": "Daniel Nguyen",
+    "department": "Art",
+    "subject": "Art History",
+    "avg_rating": 4.2,
+    "num_reviews": 66,
+    "tags": ["visual examples", "passionate", "knowledgeable"],
     "reviews": [
-      { "text": "Amazing support for students.", "rating": 5, "term": "Spring 2024" }
+      { "text": "Very passionate about art, lectures are full of visuals.", "rating": 5, "term": "Fall 2023" },
+      { "text": "Knows a ton about art history, but exams are detailed.", "rating": 4, "term": "Spring 2024" },
+      { "text": "Inspiring lectures, really makes you appreciate art.", "rating": 4, "term": "Fall 2024" }
     ],
-    "bio": "Cognitive psychology and student success.",
-    "profile_url": ""
+    "bio": "PhD in Art History. Research in Renaissance and modern art movements.",
+    "profile_url": "https://university.example/daniel_nguyen"
+  },
+  {
+    "id": "prof_rachel_smith",
+    "name": "Rachel Smith",
+    "department": "Business",
+    "subject": "Marketing Principles",
+    "avg_rating": 4.5,
+    "num_reviews": 121,
+    "tags": ["practical examples", "industry experience", "engaging"],
+    "reviews": [
+      { "text": "Brings real-world marketing experience into class.", "rating": 5, "term": "Fall 2023" },
+      { "text": "Projects are challenging but rewarding.", "rating": 4, "term": "Spring 2024" },
+      { "text": "One of the best business professors here.", "rating": 5, "term": "Fall 2024" }
+    ],
+    "bio": "MBA from Wharton. Former marketing director at a Fortune 500 company.",
+    "profile_url": "https://university.example/rachel_smith"
+  },
+  {
+    "id": "prof_john_kim",
+    "name": "John Kim",
+    "department": "Engineering",
+    "subject": "Electrical Circuits",
+    "avg_rating": 3.7,
+    "num_reviews": 58,
+    "tags": ["demanding", "technical", "knowledgeable"],
+    "reviews": [
+      { "text": "Very technical, expects students to work hard.", "rating": 3, "term": "Fall 2023" },
+      { "text": "Knows the material deeply, exams are fair but tough.", "rating": 4, "term": "Spring 2024" },
+      { "text": "Good labs, challenging lectures.", "rating": 4, "term": "Fall 2024" }
+    ],
+    "bio": "PhD in Electrical Engineering. Research in circuits and signal processing.",
+    "profile_url": "https://university.example/john_kim"
+  },
+  {
+    "id": "prof_olivia_walker",
+    "name": "Olivia Walker",
+    "department": "Education",
+    "subject": "Foundations of Education",
+    "avg_rating": 4.7,
+    "num_reviews": 95,
+    "tags": ["supportive", "practical", "motivating"],
+    "reviews": [
+      { "text": "Very supportive and motivating, really cares about future teachers.", "rating": 5, "term": "Fall 2023" },
+      { "text": "Brings real classroom examples into lectures.", "rating": 4, "term": "Spring 2024" },
+      { "text": "Makes you feel prepared for teaching.", "rating": 5, "term": "Fall 2024" }
+    ],
+    "bio": "PhD in Education. Research in pedagogy and teacher training.",
+    "profile_url": "https://university.example/olivia_walker"
+  },
+  {
+    "id": "prof_alex_patel",
+    "name": "Alex Patel",
+    "department": "Nursing",
+    "subject": "Medical-Surgical Nursing",
+    "avg_rating": 4.9,
+    "num_reviews": 142,
+    "tags": ["compassionate", "clear lectures", "practical skills"],
+    "reviews": [
+      { "text": "Very compassionate and knowledgeable. Teaches with care.", "rating": 5, "term": "Fall 2023" },
+      { "text": "Clinical sessions are extremely useful. Great mentor.", "rating": 5, "term": "Spring 2024" },
+      { "text": "One of the best professors in the nursing program.", "rating": 5, "term": "Fall 2024" }
+    ],
+    "bio": "MSN, RN. Experienced clinical nurse educator with focus on patient care and safety.",
+    "profile_url": "https://university.example/alex_patel"
   }
 ]

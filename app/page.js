@@ -1,14 +1,7 @@
+import Chatbot from './chatbot/page';
+
 'use client'
 
-
-import Link from 'next/link';
-import Head from 'next/head'
-import Header from './Header/page';
-import Hero from './Hero/page';
-import Product from './Product/page';
-import Users from './Users/page';
-import FeaturesSection from './Features/page';
-import Footer from './Footer/page';
 
 export default function Home() {
   
@@ -25,10 +18,7 @@ export default function Home() {
       </Head>
       <Header/>
       <main>
-        <Hero/>
-        <Product/>
-        <Users/>
-        <FeaturesSection/>
+        <Chatbot />
       </main>
       <Footer/>
 

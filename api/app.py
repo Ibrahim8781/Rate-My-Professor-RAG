@@ -6,52 +6,100 @@ from reranker import rerank
 from chat_completion_utils import chat_completion_json
 
 app = Flask(__name__)
-CORS(app)  # open for local dev; tighten in prod
+CORS(app)
 
 @app.route("/health", methods=["GET"])
 def health():
-    return jsonify({"status": "ok"})
+    """Health check endpoint."""
+    return jsonify({"status": "healthy", "message": "RAG Professor Review API is running"})
+
+@app.route('/api/search', methods=['POST'])
+def search_professors():
+    """
+    Main search endpoint for finding professors.
+    Expects JSON: {"query": "your search query"}
+    """
+    try:
+        data = request.get_json()
+        if not data or not data.get('query'):
+            return jsonify({"error": "Missing 'query' parameter"}), 400
+        
+        user_query = data['query'].strip()
+        if not user_query:
+            return jsonify({"error": "Query cannot be empty"}), 400
+        
+        # Step 1: Create embedding for user query
+        print(f"Processing query: {user_query}")
+        query_vector = create_embeddings(user_query)
+        
+        # Step 2: Search for similar professors
+        raw_matches = pinecone_query(query_vector, top_k=10)
+        print(f"Found {len(raw_matches)} raw matches")
+        
+        # Step 3: Rerank results
+        ranked_matches = rerank(raw_matches)
+        top_matches = ranked_matches[:5]
+        
+        # Step 4: Generate response
+        llm_response = chat_completion_json(user_query, top_matches)
+        
+        # Step 5: Format results for frontend
+        formatted_matches = []
+        for match in top_matches:
+            metadata = match.get("metadata", {})
+            formatted_matches.append({
+                "id": metadata.get("professor_id", "unknown"),
+                "name": metadata.get("name", "Unknown"),
+                "subject": metadata.get("subject", "Unknown Subject"),
+                "department": metadata.get("department", "Unknown Department"),
+                "rating": metadata.get("avg_rating", 0),
+                "num_reviews": metadata.get("num_reviews", 0),
+                "tags": metadata.get("tags", []),
+                "similarity_score": round(match.get("score", 0), 4),
+                "final_score": round(match.get("final_score", 0), 4),
+                "chunk_preview": metadata.get("chunk_text", "")[:200] + "..."
+            })
+        
+        return jsonify({
+            "query": user_query,
+            "answer": llm_response.get("answer", ""),
+            "sources": llm_response.get("sources", []),
+            "professors": formatted_matches,
+            "total_found": len(raw_matches)
+        })
+        
+    except Exception as e:
+        print(f"Error in search_professors: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 @app.route('/api/process', methods=['POST'])
 def process():
-    data = request.json or {}
-    user_text = data.get('text')
-    if not user_text or not user_text.strip():
-        return jsonify({"error": "Invalid input"}), 400
+    """Legacy endpoint for backward compatibility."""
+    data = request.get_json()
+    if data and 'text' in data:
+        # Convert old format to new format
+        data['query'] = data['text']
+    return search_professors()
 
-    # 1) Embed the question
-    qvec = create_embeddings(user_text)
-
-    # 2) Retrieve (local or Pinecone)
-    raw_matches = pinecone_query(qvec, top_k=10)  # get more, then rerank
-
-    # 3) Rerank with rating-aware score
-    ranked = rerank(raw_matches, alpha=0.7, beta=0.3)
-    top5 = ranked[:5]
-
-    # 4) Ask the LLM (or fallback) for JSON answer with sources
-    llm_json = chat_completion_json(user_text, top5)
-
-    # 5) Format return: llm answer, cited sources list, and full matches for UI
-    # normalize matches for frontend
-    ui_matches = []
-    for m in top5:
-        md = m.get("metadata", {}) or {}
-        ui_matches.append({
-            "id": md.get("professor_id") or m.get("id"),
-            "name": md.get("name"),
-            "subject": md.get("subject"),
-            "department": md.get("department"),
-            "stars": md.get("avg_rating"),
-            "review": md.get("chunk_text", ""),   # chunk snippet
-            "score": round(float(m.get("final_score", m.get("score", 0.0))), 4)
-        })
-
+@app.route('/', methods=['GET'])
+def home():
+    """Simple home page with API information."""
     return jsonify({
-        "llm_answer": llm_json.get("answer"),
-        "sources_used": llm_json.get("sources", []),
-        "matches": ui_matches
+        "message": "RAG Professor Review API",
+        "version": "2.0",
+        "endpoints": {
+            "/health": "GET - Health check",
+            "/api/search": "POST - Search professors (send JSON: {'query': 'your search'})",
+            "/api/process": "POST - Legacy endpoint"
+        },
+        "example_query": {
+            "url": "/api/search",
+            "method": "POST",
+            "body": {"query": "best math professors with clear lectures"}
+        }
     })
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    print("Starting RAG Professor Review API...")
+    print("Visit http://localhost:5000 for API information")
+    app.run(debug=True, host='0.0.0.0', port=5000)

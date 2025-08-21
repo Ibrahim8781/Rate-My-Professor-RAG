@@ -1,0 +1,657 @@
+(venv) PS D:\Rate-My-Professor-RAG\api> python test.py             
+🧪 RAG API Debug Test
+============================================================
+🏥 Testing health endpoint...
+Status: 200
+Response: {'message': 'RAG Professor Review API is running', 'status': 'healthy'}
+
+🔍 Testing search: 'best professor for calculus'
+Status: 200
+📊 Response structure:
+  Query: best professor for calculus
+  Answer: Based on your query, I recommend Jane Doe (Calculus I, 4.7★), Lisa Chen (Organic Chemistry, 4.8★), and Mike Davis (General Physics I, 4.2★).
+  Sources: ['prof_jane_doe', 'prof_lisa_chen', 'prof_mike_davis']
+  Professors found: 5
+  Total found: 10
+
+👨‍🏫 Top professor:
+  Name: Jane Doe
+  Subject: Calculus I
+  Rating: 4.7
+  Final Score: 0.7363
+  Preview: Jane Doe teaches Calculus I in Mathematics. Rating: 4.7/5 from 128 reviews. PhD in Mathematics from ...
+
+📋 Full JSON response:
+{
+  "answer": "Based on your query, I recommend Jane Doe (Calculus I, 4.7\u2605), Lisa Chen (Organic Chemistry, 4.8\u2605), and Mike Davis (General Physics I, 4.2\u2605).",
+  "professors": [
+    {
+      "chunk_preview": "Jane Doe teaches Calculus I in Mathematics. Rating: 4.7/5 from 128 reviews. PhD in Mathematics from MIT. 
+Research in numerical methods and pedagogy. Known for clear explanations and fair grading....",
+      "department": "Mathematics",
+      "final_score": 0.7363,
+      "id": "prof_jane_doe",
+      "name": "Jane Doe",
+      "num_reviews": 128,
+      "rating": 4.7,
+      "similarity_score": 0.6005,
+      "subject": "Calculus I",
+      "tags": [
+        "clear lectures",
+        "helpful office hours",
+        "fair grading"
+      ]
+    },
+    {
+      "chunk_preview": "Student reviews for Jane Doe: Great teacher, explains concepts clearly. Her lectures are well-organized and she provides excellent examples. Fair exams, good pacing. Office hours are very helpful for ...",
+      "department": "Mathematics",
+      "final_score": 0.7343,
+      "id": "prof_jane_doe",
+      "name": "Jane Doe",
+      "num_reviews": 128,
+      "rating": 4.7,
+      "similarity_score": 0.5971,
+      "subject": "Calculus I",
+      "tags": [
+        "clear lectures",
+        "helpful office hours",
+        "fair grading"
+      ]
+    },
+    {
+      "chunk_preview": "Student reviews for Lisa Chen: Best chemistry professor ever! Makes organic chem actually make sense. Incredibly clear explanations. Office hours are always packed but worth the wait. Tough subject bu...",
+      "department": "Chemistry",
+      "final_score": 0.6501,
+      "id": "prof_lisa_chen",
+      "name": "Lisa Chen",
+      "num_reviews": 156,
+      "rating": 4.8,
+      "similarity_score": 0.4435,
+      "subject": "Organic Chemistry",
+      "tags": [
+        "amazing teacher",
+        "clear lectures",
+        "helpful office hours"
+      ]
+    },
+    {
+      "chunk_preview": "Lisa Chen is known for: amazing teacher, clear lectures, helpful office hours....",
+      "department": "Chemistry",
+      "final_score": 0.6403,
+      "id": "prof_lisa_chen",
+      "name": "Lisa Chen",
+      "num_reviews": 156,
+      "rating": 4.8,
+      "similarity_score": 0.4271,
+      "subject": "Organic Chemistry",
+      "tags": [
+        "amazing teacher",
+        "clear lectures",
+        "helpful office hours"
+      ]
+    },
+    {
+      "chunk_preview": "Mike Davis teaches General Physics I in Physics. Rating: 4.2/5 from 74 reviews. PhD in Physics from Caltech. Research in quantum mechanics. Known for engaging lectures and clear explanations....",
+      "department": "Physics",
+      "final_score": 0.5945,
+      "id": "prof_mike_davis",
+      "name": "Mike Davis",
+      "num_reviews": 74,
+      "rating": 4.2,
+      "similarity_score": 0.4308,
+      "subject": "General Physics I",
+      "tags": [
+        "engaging lectures",
+        "helpful",
+        "fair tests"
+      ]
+    }
+  ],
+  "query": "best professor for calculus",
+  "sources": [
+    "prof_jane_doe",
+    "prof_lisa_chen",
+    "prof_mike_davis"
+  ],
+  "total_found": 10
+}
+------------------------------------------------------------
+🔍 Testing search: 'organic chemistry teachers'
+Status: 200
+📊 Response structure:
+  Query: organic chemistry teachers
+  Answer: For chemistry, I suggest Lisa Chen (Organic Chemistry, 4.8★), Amanda Taylor (Introduction to Psychology, 4.6★), and Jane Doe (Calculus I, 4.7★).
+  Sources: ['prof_lisa_chen', 'prof_amanda_taylor', 'prof_jane_doe']
+  Professors found: 5
+  Total found: 10
+
+👨‍🏫 Top professor:
+  Name: Lisa Chen
+  Subject: Organic Chemistry
+  Rating: 4.8
+  Final Score: 0.829
+  Preview: Lisa Chen teaches Organic Chemistry in Chemistry. Rating: 4.8/5 from 156 reviews. PhD in Organic Che...
+
+📋 Full JSON response:
+{
+  "answer": "For chemistry, I suggest Lisa Chen (Organic Chemistry, 4.8\u2605), Amanda Taylor (Introduction to Psychology, 4.6\u2605), and Jane Doe (Calculus I, 4.7\u2605).",
+  "professors": [
+    {
+      "chunk_preview": "Lisa Chen teaches Organic Chemistry in Chemistry. Rating: 4.8/5 from 156 reviews. PhD in Organic Chemistry from Harvard. Published researcher with focus on synthesis. Passionate about teaching....",
+      "department": "Chemistry",
+      "final_score": 0.829,
+      "id": "prof_lisa_chen",
+      "name": "Lisa Chen",
+      "num_reviews": 156,
+      "rating": 4.8,
+      "similarity_score": 0.7417,
+      "subject": "Organic Chemistry",
+      "tags": [
+        "amazing teacher",
+        "clear lectures",
+        "helpful office hours"
+      ]
+    },
+    {
+      "chunk_preview": "Student reviews for Lisa Chen: Best chemistry professor ever! Makes organic chem actually make sense. Incredibly clear explanations. Office hours are always packed but worth the wait. Tough subject bu...",
+      "department": "Chemistry",
+      "final_score": 0.7978,
+      "id": "prof_lisa_chen",
+      "name": "Lisa Chen",
+      "num_reviews": 156,
+      "rating": 4.8,
+      "similarity_score": 0.6896,
+      "subject": "Organic Chemistry",
+      "tags": [
+        "amazing teacher",
+        "clear lectures",
+        "helpful office hours"
+      ]
+    },
+    {
+      "chunk_preview": "Lisa Chen is known for: amazing teacher, clear lectures, helpful office hours....",
+      "department": "Chemistry",
+      "final_score": 0.6335,
+      "id": "prof_lisa_chen",
+      "name": "Lisa Chen",
+      "num_reviews": 156,
+      "rating": 4.8,
+      "similarity_score": 0.4159,
+      "subject": "Organic Chemistry",
+      "tags": [
+        "amazing teacher",
+        "clear lectures",
+        "helpful office hours"
+      ]
+    },
+    {
+      "chunk_preview": "Amanda Taylor is known for: engaging, real-world examples, fair grading....",
+      "department": "Psychology",
+      "final_score": 0.5796,
+      "id": "prof_amanda_taylor",
+      "name": "Amanda Taylor",
+      "num_reviews": 189,
+      "rating": 4.6,
+      "similarity_score": 0.3527,
+      "subject": "Introduction to Psychology",
+      "tags": [
+        "engaging",
+        "real-world examples",
+        "fair grading"
+      ]
+    },
+    {
+      "chunk_preview": "Jane Doe teaches Calculus I in Mathematics. Rating: 4.7/5 from 128 reviews. PhD in Mathematics from MIT. 
+Research in numerical methods and pedagogy. Known for clear explanations and fair grading....",
+      "department": "Mathematics",
+      "final_score": 0.5625,
+      "id": "prof_jane_doe",
+      "name": "Jane Doe",
+      "num_reviews": 128,
+      "rating": 4.7,
+      "similarity_score": 0.3108,
+      "subject": "Calculus I",
+      "tags": [
+        "clear lectures",
+        "helpful office hours",
+        "fair grading"
+      ]
+    }
+  ],
+  "query": "organic chemistry teachers",
+  "sources": [
+    "prof_lisa_chen",
+    "prof_amanda_taylor",
+    "prof_jane_doe"
+  ],
+  "total_found": 10
+}
+------------------------------------------------------------
+🔍 Testing search: 'clear lectures math'
+Status: 200
+📊 Response structure:
+  Query: clear lectures math
+  Answer: For mathematics courses, consider Jane Doe (Calculus I, 4.7★), Mike Davis (General Physics I, 4.2★), and Lisa Chen (Organic Chemistry, 4.8★).
+  Sources: ['prof_jane_doe', 'prof_mike_davis', 'prof_lisa_chen']
+  Professors found: 5
+  Total found: 10
+
+👨‍🏫 Top professor:
+  Name: Jane Doe
+  Subject: Calculus I
+  Rating: 4.7
+  Final Score: 0.6209
+  Preview: Jane Doe is known for: clear lectures, helpful office hours, fair grading.......
+
+📋 Full JSON response:
+{
+  "answer": "For mathematics courses, consider Jane Doe (Calculus I, 4.7\u2605), Mike Davis (General Physics I, 4.2\u2605), and Lisa Chen (Organic Chemistry, 4.8\u2605).",
+  "professors": [
+    {
+      "chunk_preview": "Jane Doe is known for: clear lectures, helpful office hours, fair grading....",
+      "department": "Mathematics",
+      "final_score": 0.6209,
+      "id": "prof_jane_doe",
+      "name": "Jane Doe",
+      "num_reviews": 128,
+      "rating": 4.7,
+      "similarity_score": 0.4082,
+      "subject": "Calculus I",
+      "tags": [
+        "clear lectures",
+        "helpful office hours",
+        "fair grading"
+      ]
+    },
+    {
+      "chunk_preview": "Student reviews for Jane Doe: Great teacher, explains concepts clearly. Her lectures are well-organized and she provides excellent examples. Fair exams, good pacing. Office hours are very helpful for ...",
+      "department": "Mathematics",
+      "final_score": 0.6185,
+      "id": "prof_jane_doe",
+      "name": "Jane Doe",
+      "num_reviews": 128,
+      "rating": 4.7,
+      "similarity_score": 0.4042,
+      "subject": "Calculus I",
+      "tags": [
+        "clear lectures",
+        "helpful office hours",
+        "fair grading"
+      ]
+    },
+    {
+      "chunk_preview": "Jane Doe teaches Calculus I in Mathematics. Rating: 4.7/5 from 128 reviews. PhD in Mathematics from MIT. 
+Research in numerical methods and pedagogy. Known for clear explanations and fair grading....",
+      "department": "Mathematics",
+      "final_score": 0.5936,
+      "id": "prof_jane_doe",
+      "name": "Jane Doe",
+      "num_reviews": 128,
+      "rating": 4.7,
+      "similarity_score": 0.3626,
+      "subject": "Calculus I",
+      "tags": [
+        "clear lectures",
+        "helpful office hours",
+        "fair grading"
+      ]
+    },
+    {
+      "chunk_preview": "Mike Davis is known for: engaging lectures, helpful, fair tests....",
+      "department": "Physics",
+      "final_score": 0.582,
+      "id": "prof_mike_davis",
+      "name": "Mike Davis",
+      "num_reviews": 74,
+      "rating": 4.2,
+      "similarity_score": 0.4099,
+      "subject": "General Physics I",
+      "tags": [
+        "engaging lectures",
+        "helpful",
+        "fair tests"
+      ]
+    },
+    {
+      "chunk_preview": "Lisa Chen is known for: amazing teacher, clear lectures, helpful office hours....",
+      "department": "Chemistry",
+      "final_score": 0.5811,
+      "id": "prof_lisa_chen",
+      "name": "Lisa Chen",
+      "num_reviews": 156,
+      "rating": 4.8,
+      "similarity_score": 0.3285,
+      "subject": "Organic Chemistry",
+      "tags": [
+        "amazing teacher",
+        "clear lectures",
+        "helpful office hours"
+      ]
+    }
+  ],
+  "query": "clear lectures math",
+  "sources": [
+    "prof_jane_doe",
+    "prof_mike_davis",
+    "prof_lisa_chen"
+  ],
+  "total_found": 10
+}
+------------------------------------------------------------
+🔍 Testing search: 'computer science programming'
+Status: 200
+📊 Response structure:
+  Query: computer science programming
+  Answer: For computer science, consider Sarah Johnson (Data Structures, 4.5★) and Jane Doe (Calculus I, 4.7★).
+  Sources: ['prof_sarah_johnson', 'prof_jane_doe']
+  Professors found: 5
+  Total found: 10
+
+👨‍🏫 Top professor:
+  Name: Sarah Johnson
+  Subject: Data Structures
+  Rating: 4.5
+  Final Score: 0.6456
+  Preview: Student reviews for Sarah Johnson: Excellent at explaining complex algorithms. Uses great real-world...
+
+📋 Full JSON response:
+{
+  "answer": "For computer science, consider Sarah Johnson (Data Structures, 4.5\u2605) and Jane Doe (Calculus I, 4.7\u2605).",   
+  "professors": [
+    {
+      "chunk_preview": "Student reviews for Sarah Johnson: Excellent at explaining complex algorithms. Uses great real-world examples. Projects are challenging but she provides good feedback. Very approachable. Best CS profe...",
+      "department": "Computer Science",
+      "final_score": 0.6456,
+      "id": "prof_sarah_johnson",
+      "name": "Sarah Johnson",
+      "num_reviews": 92,
+      "rating": 4.5,
+      "similarity_score": 0.476,
+      "subject": "Data Structures",
+      "tags": [
+        "clear explanations",
+        "practical examples",
+        "good feedback"
+      ]
+    },
+    {
+      "chunk_preview": "Sarah Johnson teaches Data Structures in Computer Science. Rating: 4.5/5 from 92 reviews. PhD in Computer Science from Stanford. Industry experience at Google. Specializes in algorithms and data struc...",
+      "department": "Computer Science",
+      "final_score": 0.6327,
+      "id": "prof_sarah_johnson",
+      "name": "Sarah Johnson",
+      "num_reviews": 92,
+      "rating": 4.5,
+      "similarity_score": 0.4546,
+      "subject": "Data Structures",
+      "tags": [
+        "clear explanations",
+        "practical examples",
+        "good feedback"
+      ]
+    },
+    {
+      "chunk_preview": "Jane Doe teaches Calculus I in Mathematics. Rating: 4.7/5 from 128 reviews. PhD in Mathematics from MIT. 
+Research in numerical methods and pedagogy. Known for clear explanations and fair grading....",
+      "department": "Mathematics",
+      "final_score": 0.5538,
+      "id": "prof_jane_doe",
+      "name": "Jane Doe",
+      "num_reviews": 128,
+      "rating": 4.7,
+      "similarity_score": 0.2963,
+      "subject": "Calculus I",
+      "tags": [
+        "clear lectures",
+        "helpful office hours",
+        "fair grading"
+      ]
+    },
+    {
+      "chunk_preview": "Jane Doe is known for: clear lectures, helpful office hours, fair grading....",
+      "department": "Mathematics",
+      "final_score": 0.518,
+      "id": "prof_jane_doe",
+      "name": "Jane Doe",
+      "num_reviews": 128,
+      "rating": 4.7,
+      "similarity_score": 0.2367,
+      "subject": "Calculus I",
+      "tags": [
+        "clear lectures",
+        "helpful office hours",
+        "fair grading"
+      ]
+    },
+    {
+      "chunk_preview": "Student reviews for Jane Doe: Great teacher, explains concepts clearly. Her lectures are well-organized and she provides excellent examples. Fair exams, good pacing. Office hours are very helpful for ...",
+      "department": "Mathematics",
+      "final_score": 0.5062,
+      "id": "prof_jane_doe",
+      "name": "Jane Doe",
+      "num_reviews": 128,
+      "rating": 4.7,
+      "similarity_score": 0.2169,
+      "subject": "Calculus I",
+      "tags": [
+        "clear lectures",
+        "helpful office hours",
+        "fair grading"
+      ]
+    }
+  ],
+  "query": "computer science programming",
+  "sources": [
+    "prof_sarah_johnson",
+    "prof_jane_doe"
+  ],
+  "total_found": 10
+}
+------------------------------------------------------------
+🔍 Testing search: 'psychology introduction'
+Status: 200
+📊 Response structure:
+  Query: psychology introduction
+  Answer: Good options for your query include Amanda Taylor (Introduction to Psychology, 4.6★), Sarah Johnson (Data Structures, 4.5★), and Lisa Chen (Organic Chemistry, 4.8★).
+  Sources: ['prof_amanda_taylor', 'prof_sarah_johnson', 'prof_lisa_chen']
+  Professors found: 5
+  Total found: 10
+
+👨‍🏫 Top professor:
+  Name: Amanda Taylor
+  Subject: Introduction to Psychology
+  Rating: 4.6
+  Final Score: 0.6657
+  Preview: Amanda Taylor teaches Introduction to Psychology in Psychology. Rating: 4.6/5 from 189 reviews. PhD ...
+
+📋 Full JSON response:
+{
+  "answer": "Good options for your query include Amanda Taylor (Introduction to Psychology, 4.6\u2605), Sarah Johnson (Data Structures, 4.5\u2605), and Lisa Chen (Organic Chemistry, 4.8\u2605).",
+  "professors": [
+    {
+      "chunk_preview": "Amanda Taylor teaches Introduction to Psychology in Psychology. Rating: 4.6/5 from 189 reviews. PhD in Clinical Psychology. Research focus on cognitive behavioral therapy. Excellent at making complex ...",
+      "department": "Psychology",
+      "final_score": 0.6657,
+      "id": "prof_amanda_taylor",
+      "name": "Amanda Taylor",
+      "num_reviews": 189,
+      "rating": 4.6,
+      "similarity_score": 0.4962,
+      "subject": "Introduction to Psychology",
+      "tags": [
+        "engaging",
+        "real-world examples",
+        "fair grading"
+      ]
+    },
+    {
+      "chunk_preview": "Student reviews for Amanda Taylor: Makes psychology fascinating with real-world examples and case studies. Very engaging lecturer. Tests are fair and based on lectures and readings. Great intro to psy...",
+      "department": "Psychology",
+      "final_score": 0.5958,
+      "id": "prof_amanda_taylor",
+      "name": "Amanda Taylor",
+      "num_reviews": 189,
+      "rating": 4.6,
+      "similarity_score": 0.3796,
+      "subject": "Introduction to Psychology",
+      "tags": [
+        "engaging",
+        "real-world examples",
+        "fair grading"
+      ]
+    },
+    {
+      "chunk_preview": "Sarah Johnson is known for: clear explanations, practical examples, good feedback....",
+      "department": "Computer Science",
+      "final_score": 0.5286,
+      "id": "prof_sarah_johnson",
+      "name": "Sarah Johnson",
+      "num_reviews": 92,
+      "rating": 4.5,
+      "similarity_score": 0.281,
+      "subject": "Data Structures",
+      "tags": [
+        "clear explanations",
+        "practical examples",
+        "good feedback"
+      ]
+    },
+    {
+      "chunk_preview": "Lisa Chen teaches Organic Chemistry in Chemistry. Rating: 4.8/5 from 156 reviews. PhD in Organic Chemistry from Harvard. Published researcher with focus on synthesis. Passionate about teaching....",
+      "department": "Chemistry",
+      "final_score": 0.5164,
+      "id": "prof_lisa_chen",
+      "name": "Lisa Chen",
+      "num_reviews": 156,
+      "rating": 4.8,
+      "similarity_score": 0.2207,
+      "subject": "Organic Chemistry",
+      "tags": [
+        "amazing teacher",
+        "clear lectures",
+        "helpful office hours"
+      ]
+    },
+    {
+      "chunk_preview": "Student reviews for Sarah Johnson: Excellent at explaining complex algorithms. Uses great real-world examples. Projects are challenging but she provides good feedback. Very approachable. Best CS profe...",
+      "department": "Computer Science",
+      "final_score": 0.4944,
+      "id": "prof_sarah_johnson",
+      "name": "Sarah Johnson",
+      "num_reviews": 92,
+      "rating": 4.5,
+      "similarity_score": 0.2239,
+      "subject": "Data Structures",
+      "tags": [
+        "clear explanations",
+        "practical examples",
+        "good feedback"
+      ]
+    }
+  ],
+  "query": "psychology introduction",
+  "sources": [
+    "prof_amanda_taylor",
+    "prof_sarah_johnson",
+    "prof_lisa_chen"
+  ],
+  "total_found": 10
+}
+------------------------------------------------------------
+🔄 Testing legacy endpoint: 'best calculus professor'
+Status: 200
+Legacy response: {
+  "answer": "Based on your query, I recommend Jane Doe (Calculus I, 4.7\u2605), Lisa Chen (Organic Chemistry, 4.8\u2605), and Mike Davis (General Physics I, 4.2\u2605).",
+  "professors": [
+    {
+      "chunk_preview": "Jane Doe teaches Calculus I in Mathematics. Rating: 4.7/5 from 128 reviews. PhD in Mathematics from MIT. 
+Research in numerical methods and pedagogy. Known for clear explanations and fair grading....",
+      "department": "Mathematics",
+      "final_score": 0.7395,
+      "id": "prof_jane_doe",
+      "name": "Jane Doe",
+      "num_reviews": 128,
+      "rating": 4.7,
+      "similarity_score": 0.6059,
+      "subject": "Calculus I",
+      "tags": [
+        "clear lectures",
+        "helpful office hours",
+        "fair grading"
+      ]
+    },
+    {
+      "chunk_preview": "Student reviews for Jane Doe: Great teacher, explains concepts clearly. Her lectures are well-organized and she provides excellent examples. Fair exams, good pacing. Office hours are very helpful for ...",
+      "department": "Mathematics",
+      "final_score": 0.7327,
+      "id": "prof_jane_doe",
+      "name": "Jane Doe",
+      "num_reviews": 128,
+      "rating": 4.7,
+      "similarity_score": 0.5944,
+      "subject": "Calculus I",
+      "tags": [
+        "clear lectures",
+        "helpful office hours",
+        "fair grading"
+      ]
+    },
+    {
+      "chunk_preview": "Lisa Chen is known for: amazing teacher, clear lectures, helpful office hours....",
+      "department": "Chemistry",
+      "final_score": 0.6479,
+      "id": "prof_lisa_chen",
+      "name": "Lisa Chen",
+      "num_reviews": 156,
+      "rating": 4.8,
+      "similarity_score": 0.4398,
+      "subject": "Organic Chemistry",
+      "tags": [
+        "amazing teacher",
+        "clear lectures",
+        "helpful office hours"
+      ]
+    },
+    {
+      "chunk_preview": "Student reviews for Lisa Chen: Best chemistry professor ever! Makes organic chem actually make sense. Incredibly clear explanations. Office hours are always packed but worth the wait. Tough subject bu...",
+      "department": "Chemistry",
+      "final_score": 0.6477,
+      "id": "prof_lisa_chen",
+      "name": "Lisa Chen",
+      "num_reviews": 156,
+      "rating": 4.8,
+      "similarity_score": 0.4396,
+      "subject": "Organic Chemistry",
+      "tags": [
+        "amazing teacher",
+        "clear lectures",
+        "helpful office hours"
+      ]
+    },
+    {
+      "chunk_preview": "Mike Davis teaches General Physics I in Physics. Rating: 4.2/5 from 74 reviews. PhD in Physics from Caltech. Research in quantum mechanics. Known for engaging lectures and clear explanations....",
+      "department": "Physics",
+      "final_score": 0.6042,
+      "id": "prof_mike_davis",
+      "name": "Mike Davis",
+      "num_reviews": 74,
+      "rating": 4.2,
+      "similarity_score": 0.447,
+      "subject": "General Physics I",
+      "tags": [
+        "engaging lectures",
+        "helpful",
+        "fair tests"
+      ]
+    }
+  ],
+  "query": "best calculus professor",
+  "sources": [
+    "prof_jane_doe",
+    "prof_lisa_chen",
+    "prof_mike_davis"
+  ],
+  "total_found": 10
+}
+------------------------------------------------------------
+✅ Debug tests completed!

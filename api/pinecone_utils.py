@@ -1,90 +1,79 @@
-import os, json
-from pathlib import Path
+import json
 import numpy as np
-
-# Optional Pinecone imports guarded
-USE_PINECONE = os.environ.get("USE_PINECONE", "0") == "1"
-PINECONE_INDEX_NAME = os.environ.get("PINECONE_INDEX", "professor")
-PINECONE_NAMESPACE = os.environ.get("PINECONE_NAMESPACE", "ns1")
+from pathlib import Path
 
 LOCAL_INDEX_FILE = Path("data/local_index.json")
-
-pc = None
-index = None
-
-if USE_PINECONE:
-    try:
-        from pinecone import Pinecone
-        api_key = os.environ.get("PINECONE_API_KEY")
-        if not api_key:
-            raise RuntimeError("PINECONE_API_KEY not set")
-        pc = Pinecone(api_key=api_key)
-        index = pc.Index(PINECONE_INDEX_NAME)
-    except Exception as e:
-        print(f"[pinecone_utils] Pinecone init failed, falling back to local. Reason: {e}")
-        USE_PINECONE = False
-
-# Load local index once
 _local_index = []
-if LOCAL_INDEX_FILE.exists():
+
+def load_local_index():
+    """Load and prepare the local index for fast similarity search."""
+    global _local_index
+    
+    if not LOCAL_INDEX_FILE.exists():
+        print(f"Local index not found at {LOCAL_INDEX_FILE}")
+        print("Run: python scripts/seed_index.py")
+        return
+    
     try:
         with open(LOCAL_INDEX_FILE, "r", encoding="utf-8") as f:
             _local_index = json.load(f)
-        # normalize vectors to numpy arrays for fast cosine
+        
+        # Convert vectors to numpy arrays and normalize for cosine similarity
         for item in _local_index:
-            v = np.array(item["vector"], dtype=np.float32)
-            norm = np.linalg.norm(v) + 1e-12
-            item["_v"] = v / norm
+            vector = np.array(item["vector"], dtype=np.float32)
+            # Normalize the vector
+            norm = np.linalg.norm(vector)
+            if norm > 0:
+                item["_normalized_vector"] = vector / norm
+            else:
+                item["_normalized_vector"] = vector
+                
+        print(f"Loaded {len(_local_index)} embeddings from local index")
+        
     except Exception as e:
-        print(f"[pinecone_utils] Failed to load local index: {e}")
-else:
-    print(f"[pinecone_utils] Local index not found at {LOCAL_INDEX_FILE}. Run scripts/seed_index.py")
+        print(f"Error loading local index: {e}")
+        _local_index = []
 
-def _cosine(a, b):
-    # a is np.array (normalized), b is np.array (normalize first)
-    bn = b / (np.linalg.norm(b) + 1e-12)
-    return float(np.dot(a, bn))
+def cosine_similarity(vec1, vec2):
+    """Calculate cosine similarity between two normalized vectors."""
+    return float(np.dot(vec1, vec2))
 
-def _local_query(user_vector, top_k=5):
+def pinecone_query(user_vector, top_k=10):
+    """
+    Search the local index for similar professors.
+    Returns list of matches with id, score, and metadata.
+    """
+    global _local_index
+    
+    # Load index if not already loaded
+    if not _local_index:
+        load_local_index()
+    
     if not _local_index:
         return []
-    user_v = np.array(user_vector, dtype=np.float32)
-    user_v = user_v / (np.linalg.norm(user_v) + 1e-12)
-
-    scored = []
+    
+    # Normalize user vector
+    user_array = np.array(user_vector, dtype=np.float32)
+    user_norm = np.linalg.norm(user_array)
+    if user_norm > 0:
+        user_normalized = user_array / user_norm
+    else:
+        user_normalized = user_array
+    
+    # Calculate similarities
+    results = []
     for item in _local_index:
-        score = float(np.dot(item["_v"], user_v))
-        scored.append({
+        similarity = cosine_similarity(user_normalized, item["_normalized_vector"])
+        results.append({
             "id": item["id"],
-            "score": score,
+            "score": similarity,
             "metadata": item["metadata"]
         })
-    scored.sort(key=lambda x: x["score"], reverse=True)
-    return scored[:top_k]
+    
+    # Sort by similarity score (descending)
+    results.sort(key=lambda x: x["score"], reverse=True)
+    
+    return results[:top_k]
 
-def pinecone_query(user_vector, top_k=5):
-    """
-    Returns a list of dicts: [{id, score, metadata}, ...]
-    Uses Pinecone if enabled; otherwise queries local index.
-    """
-    if USE_PINECONE and index is not None:
-        try:
-            res = index.query(
-                namespace=PINECONE_NAMESPACE,
-                vector=user_vector,
-                top_k=top_k,
-                include_metadata=True
-            )
-            out = []
-            for m in res.matches:
-                out.append({
-                    "id": m.id,
-                    "score": m.score,
-                    "metadata": m.metadata
-                })
-            return out
-        except Exception as e:
-            print(f"[pinecone_utils] Pinecone query failed, falling back to local. Reason: {e}")
-
-    # fallback local
-    return _local_query(user_vector, top_k=top_k)
+# Initialize on import
+load_local_index()

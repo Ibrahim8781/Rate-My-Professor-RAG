@@ -1,41 +1,31 @@
-# api/embedding_utils.py
+from sentence_transformers import SentenceTransformer
 import os
-import numpy as np
-from dotenv import load_dotenv
-load_dotenv()
 
-HUGGINGFACE_API_KEY = os.environ.get("HUGGINGFACE_API_KEY")
+# Load the model once globally for efficiency
+model = None
 
-# If you later install and want to use the huggingface endpoint,
-# you can add the real huggingface endpoint code here.
-# For now we provide a deterministic fallback embedding so everything runs offline.
-
-EMBED_DIM = 384  # arbitrary fixed dim for fallback
-
-def _fallback_embedding(text: str):
-    """
-    Deterministic, simple embedding:
-    - Hash token strings to seed numpy RNG so same text -> same vector
-    - Return normalized float list
-    """
-    s = text or ""
-    seed = abs(hash(s)) % (2**32)
-    rng = np.random.default_rng(seed)
-    vec = rng.standard_normal(EMBED_DIM)
-    # normalize
-    vec = vec / (np.linalg.norm(vec) + 1e-12)
-    return vec.tolist()
+def get_model():
+    global model
+    if model is None:
+        print("Loading embedding model...")
+        model = SentenceTransformer('all-MiniLM-L6-v2')
+        print("Model loaded successfully!")
+    return model
 
 def create_embeddings(text: str):
     """
-    Returns a vector (list[float]).
-    If HUGGINGFACE_API_KEY is configured and you have the HuggingFace
-    endpoint package installed, add that code here. Otherwise we use the fallback.
+    Create embeddings using sentence-transformers.
+    Returns a list of floats representing the text embedding.
     """
-    if HUGGINGFACE_API_KEY:
-        # Placeholder: If you later integrate real huggingface endpoint, implement here.
-        # Example: call the HuggingFace endpoint embedding and return the vector.
-        pass
-
-    # fallback:
-    return _fallback_embedding(text)
+    if not text or not text.strip():
+        text = "empty"
+    
+    try:
+        model = get_model()
+        # Get embedding and convert to list
+        embedding = model.encode(text, convert_to_numpy=True)
+        return embedding.tolist()
+    except Exception as e:
+        print(f"Error creating embedding: {e}")
+        # Fallback: return zero vector of standard size
+        return [0.0] * 384
