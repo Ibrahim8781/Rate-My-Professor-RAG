@@ -11,15 +11,14 @@ export default function Home() {
     <div>
       <div className="bg-[#00695c] text-white min-h-screen">
         <Head>
-          <title>AI Chatbot Landing Page</title> 
-          <link rel="icon" href="/favicon.ico" />
+          <title>ProfFinder</title>
+          <link rel="icon" type="image/png" href="/ProfFinder.png" />
         </Head>
         <main>
           <Chatbot />
         </main>
       </div>
     </div>
-
   );
 }
 

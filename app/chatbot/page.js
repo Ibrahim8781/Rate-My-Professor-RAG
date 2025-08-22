@@ -10,19 +10,11 @@ export default function Chatbot() {
   const [isDarkTheme, setIsDarkTheme] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Load messages from localStorage on component mount
   useEffect(() => {
     const stored = localStorage.getItem('prof_chat_history');
-    if (stored) {
-      try {
-        setMessages(JSON.parse(stored));
-      } catch (e) {
-        console.error('Failed to parse stored messages:', e);
-      }
-    }
+    if (stored) setMessages(JSON.parse(stored));
   }, []);
 
-  // Save messages to localStorage whenever messages change
   useEffect(() => {
     if (messages.length > 0) {
       localStorage.setItem('prof_chat_history', JSON.stringify(messages));
@@ -39,74 +31,27 @@ export default function Chatbot() {
   };
 
   const handleSubmit = async () => {
-    if (isLoading || !text.trim()) {
-      if (!text.trim()) alert("Please enter a message");
-      return;
-    }
-
+    if (isLoading || !text.trim()) return;
     const userMessage = text.trim();
     setText('');
-    
-    // Add user message
     addMessage({ text: userMessage, sender: 'user' });
-    
     setIsLoading(true);
-    
-    // Add loading message
     const loadingId = Date.now();
     addMessage({ text: '', sender: 'bot', id: loadingId, loading: true });
 
     try {
-      // Use the working API endpoint structure
       const response = await fetch('/api/process', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: userMessage }),
       });
-
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`Server error: ${response.status}`);
       const data = await response.json();
-      console.log('API Response:', data); // Debug log
 
-      // Remove loading message
       setMessages(prev => prev.filter(m => m.id !== loadingId));
-
-      // Add bot answer
-      const answer = data.llm_answer || data.answer || "No answer returned";
-      addMessage({ text: answer, sender: 'bot' });
-
-      // Process professor results
-      const professors = data.matches || data.professors || [];
-      
-      if (professors.length > 0) {
-        // Create a single formatted message with all professors
-        let professorText = "Found professors:\n\n";
-        
-        professors.slice(0, 5).forEach((prof, index) => {
-          const name = prof.name || 'Unknown Professor';
-          const subject = prof.subject || 'Unknown Subject';
-          const rating = prof.rating || prof.stars || prof.avg_rating || 'N/A';
-          const score = prof.final_score || prof.score || 0;
-          
-          professorText += `${index + 1}. ${name}\n`;
-          professorText += `   Subject: ${subject}\n`;
-          professorText += `   Rating: ${rating}⭐\n`;
-          professorText += `   Match Score: ${(score * 100).toFixed(1)}%\n\n`;
-        });
-        
-        addMessage({ 
-          text: professorText, 
-          sender: 'results',
-          professors: professors.slice(0, 5)
-        });
-      }
+      addMessage({ text: data.llm_answer || "No answer returned", sender: 'bot' });
 
     } catch (error) {
-      console.error('Error:', error);
-      // Remove loading message
       setMessages(prev => prev.filter(m => m.id !== loadingId));
       addMessage({ text: `Error: ${error.message}`, sender: 'error' });
     } finally {
@@ -124,160 +69,116 @@ export default function Chatbot() {
   const toggleTheme = () => setIsDarkTheme(!isDarkTheme);
 
   return (
-    <div className={`flex h-screen ${isDarkTheme ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'}`}>
+    <div className={`flex h-screen ${isDarkTheme ? 'bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white' : 'bg-gray-100 text-gray-900'}`}>
       {/* Sidebar */}
-      <div className={`w-64 p-4 ${isDarkTheme ? 'bg-gray-800' : 'bg-gray-200'}`}>
-        <div className="flex justify-between items-center mb-6">
-          <h1 className={`text-2xl font-bold ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>
-            Prof<span className="text-green-500">Finder</span>
+      <div className={`w-64 p-6 backdrop-blur-lg ${isDarkTheme ? 'bg-white/10' : 'bg-gray-200/70'} border-r border-gray-700`}>
+        <div className="flex justify-between items-center mb-10">
+          <h1 className="text-2xl font-extrabold tracking-wide">
+            Prof<span className="text-green-400">Finder</span>
           </h1>
-          <motion.div 
-            animate={{ rotate: 360 }} 
+          <motion.div
+            animate={{ rotate: 360 }}
             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className={`w-4 h-4 rounded-full ${isDarkTheme ? 'bg-green-400' : 'bg-green-600'}`} 
+            className="w-4 h-4 rounded-full bg-green-400 shadow-lg shadow-green-600/50"
           />
         </div>
-        
-        <div className="space-y-2 mb-6">
-          {["Mathematics", "Computer Science", "Chemistry", "Physics", "Psychology"].map((dept) => (
-            <div key={dept} className={`rounded p-2 text-sm ${isDarkTheme ? 'bg-gray-700 text-gray-300' : 'bg-gray-300 text-gray-700'}`}>
-              {dept}
+
+        <div className="space-y-3 mb-8">
+          {["Mathematics", "Computer Science", "Chemistry", "Physics", "Psychology", "Biology","Engineering","English","History","Political Science","Psychology"].map((dept) => (
+            < div key = { dept } className = "rounded-lg px-3 py-2 text-sm cursor-pointer hover:scale-105 transform transition bg-white/10 hover:bg-green-500 hover:text-white" >
+            { dept }
             </div>
           ))}
-        </div>
-        
-        <button 
-          onClick={clearChat}
-          className="w-full p-2 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+      </div>
+
+      <button
+        onClick={clearChat}
+        className="w-full py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-medium transition"
+      >
+        Clear Chat
+      </button>
+    </div>
+
+      {/* Main Chat */ }
+  <div className="flex-1 flex flex-col relative">
+    {/* Controls */}
+    <div className="absolute top-4 right-6 flex space-x-3">
+      <Link href='/'>
+        <motion.button
+          className="bg-green-500 px-5 py-2 rounded-lg shadow-lg hover:bg-green-600 transition"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
-          Clear Chat
+          Home
+        </motion.button>
+      </Link>
+
+      <motion.button
+        onClick={toggleTheme}
+        className={`p-3 rounded-full shadow-lg ${isDarkTheme ? 'bg-gray-800 text-yellow-400' : 'bg-gray-300 text-gray-900'}`}
+        whileHover={{ scale: 1.1 }}
+      >
+        {isDarkTheme ? <SunIcon className="h-6 w-6" /> : <MoonIcon className="h-6 w-6" />}
+      </motion.button>
+    </div>
+
+    {/* Messages */}
+    <div className="flex-1 overflow-y-auto px-6 py-20 space-y-4">
+      {messages.length === 0 && (
+        <div className="text-center opacity-70 mt-20">
+          <h2 className="text-3xl font-bold mb-4">👋 Welcome to ProfFinder</h2>
+          <p className="mb-2">Ask about professors, courses, or ratings.</p>
+          <h3 className="font-semibold mb-2">💡 Try asking:</h3>
+          <ul className="space-y-2 text-sm opacity-80">
+            <li>• Best calculus professors</li>
+            <li>• Computer science teachers with top ratings</li>
+            <li>• Physics professors good at explaining</li>
+            <li>• English professors with high student feedback</li>
+            <li>• Psychology professors with 5⭐ ratings</li>
+          </ul>
+        </div>
+      )}
+      {messages.map((m) => (
+        <motion.div
+          key={m.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`max-w-[75%] rounded-2xl px-4 py-3 shadow-md ${m.sender === 'user'
+            ? 'ml-auto bg-green-600 text-white'
+            : m.sender === 'error'
+              ? 'bg-red-500 text-white'
+              : isDarkTheme
+                ? 'bg-white/10'
+                : 'bg-gray-200'
+            }`}
+        >
+          {m.loading ? "..." : m.text}
+        </motion.div>
+      ))}
+    </div>
+
+    {/* Input */}
+    <div className={`p-6 border-t ${isDarkTheme ? 'border-gray-700 bg-gray-900/70' : 'bg-white/80 border-gray-300'} backdrop-blur-lg`}>
+      <div className="flex items-center space-x-3">
+        <input
+          type="text"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Ask about professors..."
+          className={`flex-1 p-3 rounded-xl focus:ring-2 focus:ring-green-500 border ${isDarkTheme ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300'}`}
+          disabled={isLoading}
+        />
+        <button
+          onClick={handleSubmit}
+          disabled={isLoading || !text.trim()}
+          className="px-6 py-3 rounded-xl font-semibold bg-green-500 hover:bg-green-600 text-white shadow-lg transition disabled:bg-gray-500 disabled:cursor-not-allowed"
+        >
+          {isLoading ? 'Searching...' : 'Send'}
         </button>
       </div>
-
-      {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
-        {/* Header with controls */}
-        <div className="absolute top-4 right-4 flex space-x-2">
-          <Link href='/'>
-            <motion.button 
-              className="bg-green-600 text-white px-4 py-2 rounded-md font-medium hover:bg-green-700 transition-colors"
-              whileHover={{ scale: 1.05 }} 
-              whileTap={{ scale: 0.95 }}
-            >
-              Home
-            </motion.button>
-          </Link>
-          
-          <motion.button 
-            onClick={toggleTheme}
-            className={`p-2 rounded-full ${isDarkTheme ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-900'}`}
-            whileHover={{ scale: 1.1 }}
-          >
-            {isDarkTheme ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
-          </motion.button>
-        </div>
-
-        {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 pt-20">
-          {messages.length === 0 && (
-            <div className="text-center text-gray-500 mt-20">
-              <h2 className="text-2xl font-bold mb-4">Welcome to ProfFinder!</h2>
-              <p>Ask me about professors, courses, or anything related to academics.</p>
-              <div className="mt-4 text-sm">
-                <p>Try asking:</p>
-                <ul className="mt-2 space-y-1">
-                  <li>"Best calculus professors"</li>
-                  <li>"Chemistry teachers with good ratings"</li>
-                  <li>"Computer science courses"</li>
-                </ul>
-              </div>
-            </div>
-          )}
-          
-          {messages.map((message) => {
-            if (message.sender === 'user') {
-              return (
-                <motion.div 
-                  key={message.id} 
-                  initial={{ opacity: 0, y: 20 }} 
-                  animate={{ opacity: 1, y: 0 }}
-                  className="max-w-[70%] ml-auto bg-green-600 text-white rounded-lg p-3"
-                >
-                  {message.text}
-                </motion.div>
-              );
-            }
-            
-            if (message.sender === 'error') {
-              return (
-                <motion.div 
-                  key={message.id} 
-                  initial={{ opacity: 0, y: 20 }} 
-                  animate={{ opacity: 1, y: 0 }}
-                  className="max-w-[70%] bg-red-600 text-white rounded-lg p-3"
-                >
-                  {message.text}
-                </motion.div>
-              );
-            }
-            
-            if (message.sender === 'results') {
-              return (
-                <motion.div 
-                  key={message.id} 
-                  initial={{ opacity: 0, y: 20 }} 
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`max-w-[80%] rounded-lg p-4 ${isDarkTheme ? 'bg-gray-800' : 'bg-gray-100'}`}
-                >
-                  <div className="whitespace-pre-line font-mono text-sm">
-                    {message.text}
-                  </div>
-                </motion.div>
-              );
-            }
-            
-            // Default bot message
-            return (
-              <motion.div 
-                key={message.id} 
-                initial={{ opacity: 0, y: 20 }} 
-                animate={{ opacity: 1, y: 0 }}
-                className={`max-w-[70%] rounded-lg p-3 ${isDarkTheme ? 'bg-gray-700' : 'bg-gray-200'}`}
-              >
-                {message.loading && (
-                  <div className="flex items-center space-x-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-500"></div>
-                    <span>{message.text}</span>
-                  </div>
-                )}
-                {!message.loading && message.text}
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* Input Area */}
-        <div className={`p-4 border-t ${isDarkTheme ? 'bg-gray-800 border-gray-700' : 'bg-gray-100 border-gray-200'}`}>
-          <div className="flex items-center space-x-2">
-            <input
-              type="text"
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask about professors..."
-              className={`flex-1 p-3 rounded-lg border ${isDarkTheme ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'} focus:outline-none focus:ring-2 focus:ring-green-500`}
-              disabled={isLoading}
-            />
-            <button
-              onClick={handleSubmit}
-              disabled={isLoading || !text.trim()}
-              className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 disabled:bg-gray-500 disabled:cursor-not-allowed transition-colors"
-            >
-              {isLoading ? 'Searching...' : 'Send'}
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
+  </div>
+    </div >
   );
 }
