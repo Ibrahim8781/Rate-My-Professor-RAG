@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """
-Seed the local index with professor embeddings.
+Improved seed script - creates ONE embedding per professor to avoid duplicates.
 Run this script after updating professors.json to rebuild the search index.
 """
-
 import json
 import sys
 from pathlib import Path
@@ -17,37 +16,47 @@ from embedding_utils import create_embeddings
 DATA_FILE = Path("data/professors.json")
 OUTPUT_FILE = Path("data/local_index.json")
 
-def create_professor_chunks(professor):
+def create_professor_text(professor):
     """
-    Create searchable text chunks for a professor.
-    Each chunk contains different aspects of the professor's information.
+    Create a single, comprehensive text representation of a professor.
+    This avoids duplicate embeddings and improves search accuracy.
     """
-    chunks = []
-    prof_id = professor["id"]
+    # Basic info
+    name = professor.get('name', 'Unknown')
+    subject = professor.get('subject', 'Unknown Subject')
+    department = professor.get('department', 'Unknown Department')
+    rating = professor.get('avg_rating', 0)
+    num_reviews = professor.get('num_reviews', 0)
     
-    # Chunk 1: Basic info + bio
-    basic_info = f"{professor.get('name', '')} teaches {professor.get('subject', '')} in {professor.get('department', '')}. "
-    basic_info += f"Rating: {professor.get('avg_rating', 0)}/5 from {professor.get('num_reviews', 0)} reviews. "
-    basic_info += professor.get('bio', '')
+    # Start with core info
+    text_parts = [
+        f"Professor {name} teaches {subject} in the {department} department.",
+        f"Rating: {rating} out of 5 stars from {num_reviews} reviews."
+    ]
     
-    if basic_info.strip():
-        chunks.append(("basic", basic_info.strip()))
+    # Add bio if available
+    bio = professor.get('bio', '').strip()
+    if bio:
+        text_parts.append(bio)
     
-    # Chunk 2: Tags and teaching style
-    if professor.get('tags'):
-        tags_text = f"{professor.get('name', '')} is known for: {', '.join(professor.get('tags', []))}."
-        chunks.append(("tags", tags_text))
+    # Add tags (teaching style info)
+    tags = professor.get('tags', [])
+    if tags:
+        text_parts.append(f"Known for: {', '.join(tags)}.")
     
-    # Chunk 3: Reviews (combine multiple reviews into meaningful chunks)
+    # Add review excerpts (combine them into one block)
     reviews = professor.get('reviews', [])
     if reviews:
-        # Combine all review text
-        review_texts = [review['text'] for review in reviews if review.get('text')]
+        review_texts = []
+        for review in reviews[:3]:  # Limit to first 3 reviews
+            text = review.get('text', '').strip()
+            if text:
+                review_texts.append(text)
+        
         if review_texts:
-            combined_reviews = f"Student reviews for {professor.get('name', '')}: " + " ".join(review_texts)
-            chunks.append(("reviews", combined_reviews))
+            text_parts.append(f"Student feedback: {' '.join(review_texts)}")
     
-    return chunks
+    return ' '.join(text_parts)
 
 def main():
     """Main function to create and save the search index."""
@@ -67,50 +76,47 @@ def main():
         print(f"❌ Error loading professor data: {e}")
         return False
     
-    # Create index entries
+    # Create index entries (ONE per professor)
     index_entries = []
-    total_chunks = 0
     
     print("🔄 Creating embeddings...")
     
     for i, professor in enumerate(professors):
         prof_name = professor.get('name', f'Professor {i+1}')
+        prof_id = professor.get('id', f'prof_{i}')
+        
         print(f"  Processing {prof_name}...")
         
-        # Create chunks for this professor
-        chunks = create_professor_chunks(professor)
-        
-        for chunk_type, chunk_text in chunks:
-            if not chunk_text.strip():
-                continue
-                
-            try:
-                # Create embedding
-                embedding = create_embeddings(chunk_text)
-                
-                # Create index entry
-                entry = {
-                    "id": f"{professor['id']}_chunk_{chunk_type}_{total_chunks}",
-                    "vector": embedding,
-                    "metadata": {
-                        "professor_id": professor["id"],
-                        "name": professor.get("name", ""),
-                        "subject": professor.get("subject", ""),
-                        "department": professor.get("department", ""),
-                        "avg_rating": professor.get("avg_rating", 0),
-                        "num_reviews": professor.get("num_reviews", 0),
-                        "tags": professor.get("tags", []),
-                        "chunk_text": chunk_text,
-                        "chunk_type": chunk_type
-                    }
+        try:
+            # Create comprehensive text for this professor
+            professor_text = create_professor_text(professor)
+            
+            # Create single embedding
+            embedding = create_embeddings(professor_text)
+            
+            # Create index entry
+            entry = {
+                "id": prof_id,
+                "vector": embedding,
+                "metadata": {
+                    "professor_id": prof_id,
+                    "name": professor.get("name", "Unknown"),
+                    "subject": professor.get("subject", "Unknown Subject"),
+                    "department": professor.get("department", "Unknown Department"),
+                    "avg_rating": professor.get("avg_rating", 0),
+                    "num_reviews": professor.get("num_reviews", 0),
+                    "tags": professor.get("tags", []),
+                    "bio": professor.get("bio", ""),
+                    "full_text": professor_text,  # Store for debugging
+                    "profile_url": professor.get("profile_url", "")
                 }
-                
-                index_entries.append(entry)
-                total_chunks += 1
-                
-            except Exception as e:
-                print(f"    ⚠️  Warning: Failed to create embedding for {prof_name} ({chunk_type}): {e}")
-                continue
+            }
+            
+            index_entries.append(entry)
+            
+        except Exception as e:
+            print(f"    ⚠️  Warning: Failed to create embedding for {prof_name}: {e}")
+            continue
     
     # Save index
     try:
@@ -118,9 +124,19 @@ def main():
         with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
             json.dump(index_entries, f, indent=2)
         
-        print(f"✅ Successfully created index with {len(index_entries)} entries")
+        print(f"✅ Successfully created index with {len(index_entries)} professors")
         print(f"📁 Saved to: {OUTPUT_FILE}")
-        print(f"📊 Average {total_chunks/len(professors):.1f} chunks per professor")
+        print(f"📊 One embedding per professor (no duplicates)")
+        
+        # Show some stats
+        subjects = {}
+        for entry in index_entries:
+            subject = entry['metadata']['subject']
+            subjects[subject] = subjects.get(subject, 0) + 1
+        
+        print(f"📋 Subjects covered: {len(subjects)}")
+        for subject, count in sorted(subjects.items()):
+            print(f"   - {subject}: {count} professors")
         
         return True
         
@@ -129,7 +145,7 @@ def main():
         return False
 
 if __name__ == "__main__":
-    print("🚀 RAG Professor Review - Index Builder")
+    print("🚀 RAG Professor Review - Improved Index Builder")
     print("=" * 50)
     
     success = main()

@@ -1,111 +1,190 @@
-from builtins import set
-import json
+import re
 
-def generate_response(user_question, matches, max_professors=3):
+def detect_subject(query):
+    """Detect subject from user query."""
+    query_lower = query.lower()
+    
+    # Math subjects
+    if any(word in query_lower for word in ['math', 'mathematics', 'calculus', 'algebra', 'geometry', 'statistics']):
+        return 'math'
+    
+    # Computer Science
+    if any(word in query_lower for word in ['computer', 'programming', 'cs', 'coding', 'software', 'data structure']):
+        return 'computer'
+    
+    # Chemistry
+    if any(word in query_lower for word in ['chemistry', 'organic', 'inorganic', 'chemical']):
+        return 'chemistry'
+    
+    # Physics
+    if any(word in query_lower for word in ['physics', 'mechanics', 'thermodynamics']):
+        return 'physics'
+    
+    # Psychology
+    if any(word in query_lower for word in ['psychology', 'psych', 'cognitive', 'behavioral']):
+        return 'psychology'
+    
+    # Nursing/Medical
+    if any(word in query_lower for word in ['nursing', 'medical', 'health', 'medicine']):
+        return 'medical'
+    
+    # English/Writing
+    if any(word in query_lower for word in ['english', 'writing', 'literature', 'creative writing']):
+        return 'english'
+    
+    return None
+
+def filter_by_subject(professors, target_subject):
+    """Filter professors by subject relevance."""
+    if not target_subject:
+        return professors
+    
+    # Create subject mapping for better matching
+    subject_keywords = {
+        'math': ['math', 'calculus', 'algebra', 'statistics', 'geometry'],
+        'computer': ['computer', 'data', 'programming', 'software', 'cs'],
+        'chemistry': ['chemistry', 'organic', 'inorganic', 'chemical'],
+        'physics': ['physics', 'mechanics', 'quantum'],
+        'psychology': ['psychology', 'psych', 'cognitive', 'behavioral'],
+        'medical': ['nursing', 'medical', 'health', 'medicine'],
+        'english': ['english', 'writing', 'literature', 'creative writing', 'composition']
+    }
+    
+    keywords = subject_keywords.get(target_subject, [])
+    if not keywords:
+        return professors
+    
+    # Score professors by subject relevance
+    scored_profs = []
+    for prof in professors:
+        subject = prof.get('metadata', {}).get('subject', '').lower()
+        department = prof.get('metadata', {}).get('department', '').lower()
+        
+        # Check if subject matches any keywords
+        relevance_score = 0
+        for keyword in keywords:
+            if keyword in subject or keyword in department:
+                relevance_score += 1
+        
+        if relevance_score > 0:
+            prof['subject_relevance'] = relevance_score
+            scored_profs.append(prof)
+    
+    if scored_profs:
+        # Sort by subject relevance first, then by final_score
+        scored_profs.sort(key=lambda x: (x.get('subject_relevance', 0), x.get('final_score', 0)), reverse=True)
+        return scored_profs
+    
+    # If no exact matches, return top 3 original results
+    return professors[:3]
+
+def detect_query_intent(query):
+    """Detect what the user is asking for."""
+    query_lower = query.lower()
+    
+    if any(word in query_lower for word in ['list all', 'show all', 'all professors']):
+        return 'list_all'
+    elif any(word in query_lower for word in ['best', 'top', 'good', 'recommend']):
+        return 'recommend'
+    elif any(word in query_lower for word in ['worst', 'bad', 'avoid']):
+        return 'avoid'
+    else:
+        return 'search'
+
+def generate_smart_response(user_query, matches):
     """
-    Generate a simple, clear response based on the top matches.
-    Returns a structured response with answer and sources.
+    Generate a contextual response based on query intent and results.
     """
     if not matches:
-        return {
-            "answer": "No professors found matching your query.",
-            "sources": []
-        }
+        return {"answer": "No professors found matching your query. Try a different search term."}
     
-    # Get top professors (avoid duplicates)
-    seen_professors = set()
-    top_professors = []
+    # Detect subject and filter if relevant
+    target_subject = detect_subject(user_query)
+    if target_subject:
+        filtered_matches = filter_by_subject(matches, target_subject)
+        print(f"Subject '{target_subject}' detected. Filtered from {len(matches)} to {len(filtered_matches)} professors.")
+    else:
+        filtered_matches = matches
     
-    for match in matches:
-        metadata = match.get('metadata', {})
-        prof_id = metadata.get('professor_id')
-        
-        if prof_id and prof_id not in seen_professors:
-            top_professors.append({
-                'id': prof_id,
-                'name': metadata.get('name', 'Unknown'),
-                'subject': metadata.get('subject', 'Unknown Subject'),
-                'rating': metadata.get('avg_rating', 0),
-                'score': match.get('final_score', match.get('score', 0))
-            })
-            seen_professors.add(prof_id)
-            
-            if len(top_professors) >= max_professors:
-                break
+    # Limit to top 3 for cleaner responses
+    top_matches = filtered_matches[:3]
+    intent = detect_query_intent(user_query)
     
-    if not top_professors:
-        return {
-            "answer": "No professors found matching your query.",
-            "sources": []
-        }
-    
-    # Generate response based on query type
-    answer = generate_answer_text(user_question, top_professors)
-    sources = [prof['id'] for prof in top_professors]
+    # Generate response based on intent
+    if intent == 'list_all':
+        answer = generate_list_response(top_matches)
+    elif intent == 'recommend':
+        answer = generate_recommendation_response(user_query, top_matches, target_subject)
+    else:
+        answer = generate_search_response(user_query, top_matches, target_subject)
     
     return {
         "answer": answer,
-        "sources": sources
+        "filtered_professors": top_matches  # Return filtered results for consistency
     }
 
-# def generate_answer_text(question, professors):
-#     """Generate a natural language response."""
-#     if len(professors) == 1:
-#         prof = professors[0]
-#         return f"I recommend {prof['name']} who teaches {prof['subject']} with a {prof['rating']}★ rating."
-    
-#     # Multiple professors
-#     prof_list = []
-#     for prof in professors:
-#         prof_list.append(f"{prof['name']} ({prof['subject']}, {prof['rating']}★)")
-    
-#     if len(prof_list) == 2:
-#         prof_str = " and ".join(prof_list)
-#     else:
-#         prof_str = ", ".join(prof_list[:-1]) + f", and {prof_list[-1]}"
-    
-#     # Determine response based on question keywords
-#     question_lower = question.lower()
-    
-#     if any(word in question_lower for word in ['best', 'recommend', 'good']):
-#         return f"Based on your query, I recommend {prof_str}."
-#     elif any(word in question_lower for word in ['calculus', 'math', 'mathematics']):
-#         return f"For mathematics courses, consider {prof_str}."
-#     elif any(word in question_lower for word in ['chemistry', 'organic']):
-#         return f"For chemistry, I suggest {prof_str}."
-#     elif any(word in question_lower for word in ['computer', 'programming', 'cs']):
-#         return f"For computer science, consider {prof_str}."
-#     else:
-#         return f"Good options for your query include {prof_str}."
-
-def generate_answer_text(question, professors):
-    q = question.lower()
-    
-    # Strong subject match
-    if "math" in q or "calculus" in q:
-        subject_filter = [p for p in professors if "math" in p["subject"].lower() or "calculus" in p["subject"].lower()]
-        if subject_filter:
-            professors = subject_filter
-    elif "chemistry" in q or "organic" in q:
-        subject_filter = [p for p in professors if "chem" in p["subject"].lower()]
-        if subject_filter:
-            professors = subject_filter
-    elif "computer" in q or "programming" in q or "cs" in q:
-        subject_filter = [p for p in professors if "computer" in p["subject"].lower() or "data" in p["subject"].lower()]
-        if subject_filter:
-            professors = subject_filter
-    
-    # Format final string
+def generate_recommendation_response(query, professors, subject):
+    """Generate recommendation-style response."""
     if len(professors) == 1:
-        p = professors[0]
-        return f"I recommend {p['name']} who teaches {p['subject']} ({p['rating']}★)."
+        prof = professors[0]['metadata']
+        rating = prof.get('avg_rating', 0)
+        return f"I recommend {prof['name']} who teaches {prof['subject']} with a {rating}⭐ rating."
+    
+    # Multiple professors
+    if subject:
+        subject_name = {
+            'math': 'mathematics',
+            'computer': 'computer science', 
+            'chemistry': 'chemistry',
+            'physics': 'physics',
+            'psychology': 'psychology',
+            'medical': 'medical/nursing',
+            'english': 'English/writing'
+        }.get(subject, 'your subject')
+        
+        prof_list = []
+        for prof in professors:
+            metadata = prof['metadata']
+            rating = metadata.get('avg_rating', 0)
+            prof_list.append(f"{metadata['name']} ({rating}⭐)")
+        
+        return f"For {subject_name}, I recommend: {', '.join(prof_list)}."
+    
     else:
-        prof_str = ", ".join([f"{p['name']} ({p['subject']}, {p['rating']}★)" for p in professors])
-        return f"Based on your query, I recommend {prof_str}."
+        # General recommendation
+        prof_list = []
+        for prof in professors:
+            metadata = prof['metadata']
+            rating = metadata.get('avg_rating', 0)
+            subject = metadata.get('subject', 'Unknown')
+            prof_list.append(f"{metadata['name']} ({subject}, {rating}⭐)")
+        
+        return f"Based on your query, I recommend: {', '.join(prof_list)}."
 
+def generate_search_response(query, professors, subject):
+    """Generate search-style response."""
+    if len(professors) == 1:
+        prof = professors[0]['metadata']
+        rating = prof.get('avg_rating', 0)
+        return f"Found: {prof['name']} - {prof['subject']} ({rating}⭐)"
+    
+    prof_count = len(professors)
+    top_prof = professors[0]['metadata']
+    rating = top_prof.get('avg_rating', 0)
+    
+    return f"Found {prof_count} professors. Top match: {top_prof['name']} - {top_prof['subject']} ({rating}⭐)"
+
+def generate_list_response(professors):
+    """Generate list-style response."""
+    prof_list = []
+    for i, prof in enumerate(professors, 1):
+        metadata = prof['metadata']
+        rating = metadata.get('avg_rating', 0)
+        prof_list.append(f"{i}. {metadata['name']} - {metadata['subject']} ({rating}⭐)")
+    
+    return "Here are the professors:\n" + "\n".join(prof_list)
+
+# Legacy function for backward compatibility
 def chat_completion_json(user_question, matches):
-    """
-    Main function that returns JSON response.
-    Maintains compatibility with existing code.
-    """
-    return generate_response(user_question, matches)
+    """Legacy function - redirects to new system."""
+    return generate_smart_response(user_question, matches)
