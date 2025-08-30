@@ -162,3 +162,42 @@ cd api && python app.py
 # Terminal 2: Frontend
 cd app && npm run dev
 
+
+## About Project Working 
+
+app.py - API Gateway
+
+Flask REST API with CORS for frontend communication
+Orchestrates the entire RAG pipeline
+Handles query preprocessing and response formatting
+Implements deduplication logic to prevent duplicate professors
+
+embedding_utils.py - Text Vectorization
+
+Uses Sentence Transformers (all-MiniLM-L6-v2) to convert text to 384-dimensional vectors
+Chosen for its balance of speed and accuracy in semantic similarity tasks
+Implements singleton pattern for model loading efficiency
+
+pinecone_utils.py - Vector Search Engine
+
+Local implementation of vector similarity search using cosine similarity
+Loads and normalizes vector index for fast retrieval
+Returns ranked results based on semantic similarity scores
+
+reranker.py - Multi-Factor Ranking
+
+Combines semantic similarity (70%) with professor ratings (25%) and review count (5%)
+Addresses the cold start problem where high-similarity but low-rated professors rank too high
+Implements weighted scoring algorithm for business logic integration
+
+chat_completion_utils.py - Response Intelligence
+
+Subject detection using keyword mapping for domain-specific filtering
+Query intent classification (recommend, search, list) for contextual responses
+Natural language generation without external LLM APIs
+
+seed_index.py - Data Pipeline
+
+Processes raw professor data into searchable embeddings
+Creates comprehensive text representations combining bio, reviews, and metadata
+One embedding per professor to eliminate duplicates
