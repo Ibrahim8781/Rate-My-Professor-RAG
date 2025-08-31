@@ -25,22 +25,6 @@ A Retrieval-Augmented Generation (RAG) system for finding and recommending profe
 - Tailwind CSS
 - Framer Motion
 
-## 📁 Project Structure
-
-Rate-My-Professor-RAG/
-├── api/                          # Backend Flask API
-│   ├── data/
-│   │   ├── professors.json       # Professor data
-│   │   └── local_index.json      # Vector embeddings index
-│   ├── scripts/
-│   │   └── seed_index.py         # Index building script
-│   ├── app.py                    # Main Flask application
-│   ├── embedding_utils.py        # Text embedding functions
-│   ├── pinecone_utils.py         # Vector search functions
-│   ├── reranker.py               # Result ranking logic
-│   ├── chat_completion_utils.py  # Response generation
-│   └── requirements.txt          # Python dependencies
-└── frontend/                     # Next.js frontend (your existing code)
 
 
 ## 🏃‍♂️ Quick Start
